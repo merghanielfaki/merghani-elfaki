@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<menuitem action="open_public_holidays_view" id="menu_public_holidays_view" parent="hr_holidays.menu_hr_holidays_configuration" sequence="20" />
+
+	<menuitem parent="hr_holidays.menu_hr_holidays_root" id="menu_leave_request" action="ess_all_leave_request_action" groups="hr.group_hr_user,hr_holidays.group_hr_holidays_user"
+		sequence="1" />
+
+	<menuitem name="Holidays Calculator" id="menu_hr_holidays_calculator_wizard" action="action_hr_holidays_calculator_wizard" parent="hr_holidays.menu_hr_holidays_root"
+		groups="hr_holidays_extension.holidays_calculator" sequence="17" />
+
+	<menuitem action="open_accrual" id="menu_hr_accrual" parent="hr_holidays.menu_hr_holidays_configuration" sequence="45" />
+
+	<menuitem action="act_hr_holidays_approval" id="menu_hr_holidays_approval" parent="hr_holidays.menu_hr_holidays_configuration" groups="base.group_no_one" sequence="60" />
+
+	<menuitem action="ess_employee_leave_request_action" id="menu_my_leaves" parent="hr_holidays.menu_hr_holidays_my_leaves" sequence="5" />
+	
+	<record id="hr_holidays.menu_hr_holidays_root" model="ir.ui.menu">
+		<field name="groups_id" eval="[(6,0, [ref('group_leave_employee'), ref('group_leave_employee_external'), ref('hr_holidays.group_hr_holidays_user')])]" />
+	</record>
+	
+	<record id="hr_holidays.menu_open_allocation_holidays" model="ir.ui.menu">
+		<field name="groups_id" eval="[(4,ref('hr_holidays_extension.group_leave_hr'))]" />
+	</record>
+
+	<menuitem id="menu_open_view_holiday_status" name="Leave Types" parent="hr_holidays.menu_hr_holidays_configuration" sequence="1"
+	 action="hr_holidays.open_view_holiday_status" />
+	 
+	 <record id="hr_holidays.menu_hr_holidays_approvals" model="ir.ui.menu">
+		<field name="groups_id" eval="[(5,0,0)]" />
+	</record>
+	
+	<record id="hr_holidays.menu_open_company_allocation" model="ir.ui.menu">
+		<field name="name">Leave Request</field>
+	</record>
+	
+	<record id="hr_holidays.menu_open_ask_holidays_new" model="ir.ui.menu">
+		<field name="name">Leave Calendar</field>
+	</record>
+	
+	<menuitem parent="hr_holidays.menu_hr_holidays_approvals" id="ess_employee_manager_leaves" action="hr_holidays_extension.ess_employee_manager_leave_action" sequence="2"
+		groups="hr_holidays_extension.group_leave_employee_manager,hr_holidays_extension.group_leave_manager_external" />
+
+	<menuitem parent="hr_holidays.menu_hr_holidays_approvals" id="ess_vp_leaves" action="hr_holidays_extension.ess_vp_leave_action" sequence="4" 
+	groups="hr_holidays_extension.group_leave_vp,hr_holidays_extension.group_leave_vp_external" />
+
+	<menuitem parent="hr_holidays.menu_hr_holidays_approvals" id="ess_ceo_leaves" action="hr_holidays_extension.ess_ceo_leave_action" sequence="5" 
+	groups="hr_holidays_extension.group_leave_ceo,hr_holidays_extension.group_leave_ceo_external" />
+
+	<menuitem parent="hr_holidays.menu_hr_holidays_approvals" id="ess_hr_leaves" action="hr_holidays_extension.ess_hr_leave_action" sequence="6" 
+	groups="hr_holidays_extension.group_leave_hr,hr_holidays_extension.group_leave_hr_external" />
+
+	<menuitem parent="hr_holidays.menu_hr_holidays_approvals" id="ess_all_leaves_request" action="hr_holidays_extension.ess_all_leave_request_action" sequence="30"
+		groups="hr_holidays_extension.group_leave_director,hr_holidays_extension.group_leave_hr,hr_holidays_extension.group_leave_ceo,hr_holidays_extension.group_leave_vp,hr_holidays_extension.group_leave_employee_manager" />
+
+
+
+</odoo>

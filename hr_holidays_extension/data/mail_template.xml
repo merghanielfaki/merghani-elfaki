@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!-- Start EMP TO Manager Notification -->
+
+	<record id="email_template_holidays_update_mgt" model="mail.template">
+		<field name="name">Manager Leave Submit for Approval</field>
+		<field name="model_id" ref="hr_holidays.model_hr_holidays" />
+		<field name="email_from">${user.email}</field>
+		<field name="email_to">${object.employee_id.parent_id.work_email}</field>
+		<field name="needaction_partner_ids">${object.needaction_partner_ids}</field>
+		<field name="email_cc"></field>
+		<field name="auto_delete" eval="False" />
+		<field name="subject"> Leave Request To Be Approved </field>
+		<field name="body_html"><![CDATA[
+<p>
+Dear ${object.employee_id.parent_id.name},
+<br>
+<p style="padding-left: 4em;">
+% if not object.partial_leave:
+${object.employee_id.name} has just requested (${object.holiday_status_id.name})
+<br>
+Starting from ${object.date_from.split(' ')[0]} to ${object.date_to.split(' ')[0]} with a total of (${object.real_days}) day/s.
+% endif
+% if object.partial_leave:
+${object.employee_id.name} has just requested partial (${object.holiday_status_id.name})
+<br>
+Starting from ${object.get_timezone_from_datetime(object.date_time_from)} to ${object.get_timezone_from_datetime(object.date_time_to)} with a total of (${object.total_hours_char}).
+% endif
+<br>
+<p>Kindly use the below link to approve the leave.</p>
+<p><a href="/web#id=${object.id}&view_type=form&model=hr.holidays">Direct Link</a></p>
+</p>
+</p>
+<br />
+<br />
+
+<p style="font-size:13px; color:blue; border: 1px solid red; width:350px;"> Auto generated message through the ERP System. </p>		       
+
+			   ]]>
+			<!-- link in email <p>Link: <a href="${object.web.base.url}web?#id=${object.id}&view_type=form&model=hr.holidays&menu_id=1056&action=972">Click here</a></p> -->
+		</field>
+	</record>
+	
+	<record id="email_template_holidays_request_cancel" model="mail.template">
+		<field name="name">Employee Request Cancel Leave</field>
+		<field name="model_id" ref="hr_holidays.model_hr_holidays" />
+		<field name="email_from">${user.email}</field>
+		<field name="email_to">${object.employee_id.parent_id.work_email}</field>
+		<field name="needaction_partner_ids">${object.needaction_partner_ids}</field>
+		<field name="email_cc"></field>
+		<field name="auto_delete" eval="False" />
+		<field name="subject">Cancel Leave Request </field>
+		<field name="body_html"><![CDATA[
+<p>
+Dear ${object.employee_id.parent_id.name},
+<br>
+<p style="padding-left: 4em;">
+% if not object.partial_leave:
+${object.employee_id.name} has just requested cancel his/her (${object.holiday_status_id.name}). 
+<br>
+Starting from ${object.date_from.split(' ')[0]} to ${object.date_to.split(' ')[0]} with a total of (${object.real_days}) day/s.
+% endif
+% if object.partial_leave:
+${object.employee_id.name} has just requested cancel his/her partial (${object.holiday_status_id.name})
+<br>
+Starting from ${object.get_timezone_from_datetime(object.date_time_from)} to ${object.get_timezone_from_datetime(object.date_time_to)} with a total of (${object.total_hours_char}).
+% endif
+<br>
+<p>Kindly use the below link to approve cancelling the leave.</p>
+<p><a href="/web#id=${object.id}&view_type=form&model=hr.holidays">Direct Link</a></p>
+</p>
+</p>
+<br />
+<br />
+
+<p style="font-size:13px; color:blue; border: 1px solid red; width:350px;"> Auto generated message through the ERP System. </p>		       
+
+			   ]]>
+			<!-- link in email <p>Link: <a href="${object.web.base.url}web?#id=${object.id}&view_type=form&model=hr.holidays&menu_id=1056&action=972">Click here</a></p> -->
+		</field>
+	</record>		
+	
+	<record id="email_template_holidays_cancel_mgt" model="mail.template">
+		<field name="name">Manager Cancel Leave</field>
+		<field name="model_id" ref="hr_holidays.model_hr_holidays" />
+		<field name="email_from">${user.email}</field>
+		<field name="email_to">${object.employee_id.work_email}</field>
+		<field name="needaction_partner_ids">${object.needaction_partner_ids}</field>
+		<field name="email_cc"></field>
+		<field name="auto_delete" eval="False" />
+		<field name="subject"> Leave Request To Be Approved </field>
+		<field name="body_html"><![CDATA[
+<p>
+Dear ${object.employee_id.name},
+<br>
+${user.name} has just approved cancelling your (${object.holiday_status_id.name})
+<p>Kindly use the below link to check leave status.</p>
+<p><a href="/web#id=${object.id}&view_type=form&model=hr.holidays">Direct Link</a></p>
+
+<br />
+
+<p style="font-size:13px; color:blue; border: 1px solid red; width:350px;"> Auto generated message through the ERP System. </p>		       
+
+			   ]]>
+			<!-- link in email <p>Link: <a href="${object.web.base.url}web?#id=${object.id}&view_type=form&model=hr.holidays&menu_id=1056&action=972">Click here</a></p> -->
+		</field>
+	</record>	
+	
+	<record id="email_template_holidays_cancel_refused_mgt" model="mail.template">
+		<field name="name">Manager Cancel Refused Leave</field>
+		<field name="model_id" ref="hr_holidays.model_hr_holidays" />
+		<field name="email_from">${user.email}</field>
+		<field name="email_to">${object.employee_id.work_email}</field>
+		<field name="needaction_partner_ids">${object.needaction_partner_ids}</field>
+		<field name="email_cc"></field>
+		<field name="auto_delete" eval="False" />
+		<field name="subject"> Leave Request To Be Approved </field>
+		<field name="body_html"><![CDATA[
+<p>
+Dear ${object.employee_id.name},
+<br>
+${user.name} has just refused cancelling your (${object.holiday_status_id.name}), you leave has been returned to Approved status.
+<p>Kindly use the below link to check leave status.</p>
+<p><a href="/web#id=${object.id}&view_type=form&model=hr.holidays">Direct Link</a></p>
+
+<br />
+
+<p style="font-size:13px; color:blue; border: 1px solid red; width:350px;"> Auto generated message through the ERP System. </p>		       
+
+			   ]]>
+			<!-- link in email <p>Link: <a href="${object.web.base.url}web?#id=${object.id}&view_type=form&model=hr.holidays&menu_id=1056&action=972">Click here</a></p> -->
+		</field>
+	</record>	
+
+	<!-- End Manager Notification -->
+
+
+
+	<!-- Start VP Notification -->
+
+	<record id="email_template_holidays_update_vp" model="mail.template">
+		<field name="name">VP Notification Email Template</field>
+		<field name="model_id" ref="hr_holidays.model_hr_holidays" />
+		<field name="email_from">${user.email}</field>
+		<field name="email_to">${object.employee_id.service_vp_id.work_email}</field>
+		<field name="needaction_partner_ids">${object.needaction_partner_ids}</field>
+		<field name="email_cc">${object.employee_id.work_email},${object.employee_id.parent_id.work_email}</field>
+		<field name="subject">Leave Request To Be Approved
+		</field>
+		<field name="auto_delete" eval="False" />
+		<field name="body_html"><![CDATA[
+   		
+<p>
+Dear ${object.employee_id.service_vp_id.name},
+</p>
+<p style="padding-left: 4em;">
+% if not object.partial_leave:
+${object.employee_id.name} has just requested (${object.holiday_status_id.name})
+<br>
+Starting from ${object.date_from.split(' ')[0]} to ${object.date_to.split(' ')[0]} with a total of (${object.real_days}) day/s.
+% endif
+% if object.partial_leave:
+${object.employee_id.name} has just requested partial (${object.holiday_status_id.name})
+<br>
+Starting from ${object.get_timezone_from_datetime(object.date_time_from)} to ${object.get_timezone_from_datetime(object.date_time_to)} with a total of (${object.total_hours_char}).
+% endif
+<br>
+<p>Kindly use the below link to approve the leave.</p>
+<p><a href="/web#id=${object.id}&view_type=form&model=hr.holidays">Direct Link</a></p>
+<br>
+</p>
+
+<br />
+<br />
+
+<p style="font-size:13px; color:blue; border: 1px solid red; width:350px;"> Auto generated message through the ERP System. </p>		       
+
+
+		       
+		    		       ]]>
+
+		</field>
+	</record>
+
+	<!-- End VP Notification -->
+
+
+	<!-- Start CEO Notification -->
+
+	<record id="email_template_holidays_update_ceo" model="mail.template">
+		<field name="name">CEO Notification Email Template</field>
+		<field name="model_id" ref="hr_holidays.model_hr_holidays" />
+		<field name="email_from">${user.email}</field>
+		<field name="email_to">${object.employee_id.service_ceo_id.work_email}</field>
+		<field name="needaction_partner_ids">${object.needaction_partner_ids}</field>
+		<field name="email_cc">${object.employee_id.work_email},${object.employee_id.parent_id.work_email},${object.employee_id.parent_id.parent_id.work_email}</field>
+		<field name="subject">Leave Request To Be Approved
+		</field>
+		<field name="auto_delete" eval="False" />
+		<field name="body_html"><![CDATA[
+		       		
+	
+<p>
+Dear Chief Executive Officer,
+<br>
+<p style="padding-left: 4em;">
+% if not object.partial_leave:
+${object.employee_id.name} has just requested (${object.holiday_status_id.name})
+<br>
+Starting from ${object.date_from.split(' ')[0]} to ${object.date_to.split(' ')[0]} with a total of (${object.real_days}) day/s.
+% endif
+% if object.partial_leave:
+${object.employee_id.name} has just requested partial (${object.holiday_status_id.name})
+<br>
+Starting from ${object.get_timezone_from_datetime(object.date_time_from)} to ${object.get_timezone_from_datetime(object.date_time_to)} with a total of (${object.total_hours_char}).
+% endif
+<br>
+<p>Kindly use the below link to approve the leave.</p>
+<p><a href="/web#id=${object.id}&view_type=form&model=hr.holidays">Direct Link</a></p>
+</p>
+</p>
+<br />
+<br />
+
+<p style="font-size:13px; color:blue; border: 1px solid red; width:350px;"> Auto generated message through the ERP System. </p>		       
+
+
+		       ]]>
+		</field>
+	</record>
+
+	<!-- End CEO Notification -->
+	<!-- Start Employee notification approved status -->
+
+	<record id="email_template_holidays_update_emp" model="mail.template">
+		<field name="name">Approval Leave Employee notification Template</field>
+		<field name="model_id" ref="hr_holidays.model_hr_holidays" />
+		<field name="email_from">${user.email}</field>
+		<field name="email_to">${object.employee_id.work_email}</field>
+		<field name="email_cc">${object.employee_id.parent_id.work_email}</field>
+		<field name="needaction_partner_ids">${[(4,object.employee_id.address_home_id.id)]}</field>
+		<field name="subject"> Leave Request Approved </field>
+		<field name="auto_delete" eval="False" />
+		<field name="body_html"><![CDATA[
+<p>
+Dear ${object.employee_id.name},		    		     
+<br>
+<p style="padding-left: 4em;">
+% if not object.partial_leave:
+Your (${object.holiday_status_id.name})
+<br>
+Starting from ${object.date_from.split(' ')[0]} to ${object.date_to.split(' ')[0]} with a total of (${object.real_days}) day/s.
+% endif
+% if object.partial_leave:
+Your partial (${object.holiday_status_id.name})
+<br>
+Starting from ${object.get_timezone_from_datetime(object.date_time_from)} to ${object.get_timezone_from_datetime(object.date_time_to)} with a total of (${object.total_hours_char}).
+% endif
+<br>
+has been approved by ${user.name}.
+<p>Kindly use the below link to approve the leave.</p>
+<p><a href="/web#id=${object.id}&view_type=form&model=hr.holidays">Direct Link</a></p>
+</p>
+</p>
+<br />
+<br />
+<p style="font-size:13px; color:blue; border: 1px solid red; width:350px;"> Auto generated message through the ERP System. </p>		       
+
+				   
+			   ]]>
+			<!-- link in email <p>Link: <a href="${object.web.base.url}web?#id=${object.id}&view_type=form&model=hr.holidays&menu_id=1056&action=972">Click here</a></p> -->
+		</field>
+	</record>
+
+	<!-- End Employee Notification -->
+	<!-- Start Employee notification refused status -->
+
+	<record id="email_template_holidays_update_emp2" model="mail.template">
+		<field name="name">Refusal Leave Employee notification Template</field>
+		<field name="model_id" ref="hr_holidays.model_hr_holidays" />
+		<field name="email_from">${user.email}</field>
+		<field name="email_to">${object.employee_id.work_email}</field>
+		<field name="needaction_partner_ids">${[(4,object.employee_id.address_home_id.id)]}</field>
+		<field name="email_cc">${object.employee_id.parent_id.work_email}</field>
+		<field name="subject"> Leave Request Rejected </field>
+		<field name="auto_delete" eval="False" />
+		<field name="body_html"><![CDATA[
+				
+			<p>
+Dear ${object.employee_id.name},		    		     
+<br>
+<p style="padding-left: 4em;">
+% if not object.partial_leave:
+Your (${object.holiday_status_id.name})
+<br>
+Starting from ${object.date_from.split(' ')[0]} to ${object.date_to.split(' ')[0]} with a total of (${object.real_days}) day/s.
+% endif
+% if object.partial_leave:
+Your partial (${object.holiday_status_id.name})
+<br>
+Starting from ${object.get_timezone_from_datetime(object.date_time_from)} to ${object.get_timezone_from_datetime(object.date_time_to)} with a total of (${object.total_hours_char}).
+% endif
+<br>
+has been rejected by ${user.name} due to: (${object.refuse_reason}).
+<p>Kindly use the below link to check the leave.</p>
+<p><a href="/web#id=${object.id}&view_type=form&model=hr.holidays">Direct Link</a></p>
+</p>
+</p>
+<br />
+<br />
+<p style="font-size:13px; color:blue; border: 1px solid red; width:350px;"> Auto generated message through the ERP System. </p>		       
+
+		
+			   
+			   ]]>
+
+		</field>
+	</record>
+
+	<!-- End Employee Notification -->
+
+	<!-- Start Employee notification set to draft -->
+	<record id="email_template_holidays_update_emp3" model="mail.template">
+		<field name="name">Draft leave Employee Notification Email Template</field>
+		<field name="model_id" ref="hr_holidays.model_hr_holidays" />
+		<field name="email_from">${user.email}</field>
+		<field name="email_to">${object.employee_id.work_email}</field>
+		<field name="email_cc">${object.employee_id.parent_id.work_email}</field>
+		<field name="subject"> Leave Request Returned </field>
+		<field name="auto_delete" eval="False" />
+		<field name="body_html"><![CDATA[
+				   
+<p>
+Dear ${object.employee_id.name},		    		     
+<br>
+<p style="padding-left: 4em;">
+% if not object.partial_leave:
+Your (${object.holiday_status_id.name})
+<br>
+Starting from ${object.date_from.split(' ')[0]} to ${object.date_to.split(' ')[0]} with a total of (${object.real_days}) day/s.
+% endif
+% if object.partial_leave:
+Your partial (${object.holiday_status_id.name})
+<br>
+Starting from ${object.get_timezone_from_datetime(object.date_time_from)} to ${object.get_timezone_from_datetime(object.date_time_to)} with a total of (${object.total_hours_char}).
+% endif
+<br>
+has been returned by the HR Team.
+<p>Kindly use the below link to check the leave.</p>
+<p><a href="/web#id=${object.id}&view_type=form&model=hr.holidays">Direct Link</a></p>
+</p>
+</p>
+<br />
+<br />
+<p style="font-size:13px; color:blue; border: 1px solid red; width:350px;"> Auto generated message through the ERP System. </p>		       
+		   
+			   
+			   
+		    			   
+			   ]]>
+
+		</field>
+	</record>
+
+	<!-- End Employee Notification -->
+
+	<!-- Start EMP to HR Notification -->
+	<record id="email_template_holidays_emp_hr" model="mail.template">
+		<field name="name">Emp Directly to HR Leave Submit for Approval Template</field>
+		<field name="model_id" ref="hr_holidays.model_hr_holidays" />
+		<field name="email_from">${user.email}</field>
+		<field name="email_to">hr-operations@takamol.com.sa</field>
+		<field name="email_cc">${object.employee_id.parent_id.work_email}</field>
+		<field name="needaction_partner_ids">${object.needaction_partner_ids}</field>
+		<field name="subject"> Leave Request To Be Approved </field>
+		<field name="auto_delete" eval="False" />
+		<field name="body_html"><![CDATA[
+<p>
+Dear HR Admin,
+<br>
+<p style="padding-left: 4em;">
+% if not object.partial_leave:
+${object.employee_id.name} has just requested (${object.holiday_status_id.name})
+<br>
+Starting from ${object.date_from.split(' ')[0]} to ${object.date_to.split(' ')[0]} with a total of (${object.real_days}) day/s.
+% endif
+% if object.partial_leave:
+${object.employee_id.name} has just requested partial (${object.holiday_status_id.name})
+<br>
+Starting from ${object.get_timezone_from_datetime(object.date_time_from)} to ${object.get_timezone_from_datetime(object.date_time_to)} with a total of (${object.total_hours_char}).
+% endif
+<br>
+<p>Kindly use the below link to approve the leave.</p>
+<p><a href="/web#id=${object.id}&view_type=form&model=hr.holidays">Direct Link</a></p>
+</p>
+</p>
+<br />
+<br />
+
+<p style="font-size:13px; color:blue; border: 1px solid red; width:350px;"> Auto generated message through the ERP System. </p>		       
+
+			   
+		       
+			   ]]>
+		</field>
+	</record>
+	
+</odoo>

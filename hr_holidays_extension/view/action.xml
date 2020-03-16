@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="open_public_holidays_view" model="ir.actions.act_window">
+		<field name="name">Public Holidays</field>
+		<field name="res_model">hr.holidays.public</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">tree,form</field>
+	</record>
+
+	<!-- To hide the inactive employee leaves -->
+	<record id="hr_holidays.act_hr_employee_holiday_request" model="ir.actions.act_window">
+		<field name="domain">[('type','=','remove'),('state','=','validate')]</field>
+	</record>
+
+	<record id="hr_holidays.open_company_allocation" model="ir.actions.act_window">
+		<field name="name">Leaves Request</field>
+		<field name="domain">[('holiday_type','=','employee'), ('state', '!=', 'refuse'),('employee_id.active','=',True),('type', '=', 'remove')]
+		</field>
+		<field name="context">{
+                'search_default_group_type': 1,
+                'search_default_year': 1 ,
+                'needaction_menu_ref':
+                [
+                    'hr_holidays.menu_open_ask_holidays_new',
+                    'hr_holidays.menu_open_allocation_holidays',
+                    'hr_holidays.menu_request_approve_allocation',
+                    'hr_holidays.menu_open_employee_leave',
+                ]
+            }</field>
+	</record>	
+
+	<record id="hr_holidays.open_ask_holidays" model="ir.actions.act_window">
+		<field name="context">{'default_type': 'remove',
+			'search_default_group_type': 1}
+		</field>
+	</record>
+
+	<record id="hr_holidays.request_approve_holidays" model="ir.actions.act_window">
+		<field name="domain">[('type','=','remove'),('employee_id.active','=',True)]
+		</field>
+	</record>
+
+	<record model="ir.actions.act_window" id="ess_employee_leave_request_action">
+		<field name="name">My Leaves</field>
+		<field name="res_model">hr.leave</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">tree,form</field>
+		<field name="context">{'default_type': 'remove'}</field>
+		<field name="domain">[('type','=','remove'),('employee_id.user_id.id','=',uid)]</field>
+		<field name="search_view_id" ref="hr_holidays.view_hr_holidays_filter" />
+		<field name="help" type="html">
+			<p class="oe_view_nocontent_create">
+				Click to create a new leave request.
+			</p>
+			<p>
+				Once you have recorded your leave request, it will be sent
+				to a manager for validation. Be sure to set the right leave
+				type (recuperation, legal holidays, sickness) and the exact
+				number of open days related to your leave.
+			</p>
+		</field>
+	</record>
+
+	<record model="ir.actions.act_window" id="ess_employee_manager_leave_action">
+		<field name="name">Waiting Manager Approval</field>
+		<field name="res_model">hr.leave</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">tree,form</field>
+		<field name="context">{'default_type': 'remove'}</field>
+		<field name="domain">[('type','=','remove'),('state','in',['confirm','requster_cancel']),('approval_user_ids', '=', uid)]</field>
+		<field name="needaction_domain">[]</field>
+		<field name="search_view_id" ref="hr_holidays.view_hr_holidays_filter" />
+		<field name="help" type="html">
+			<p class="oe_view_nocontent_create">
+				Click to create a new leave request.
+			</p>
+			<p>
+				Once you have recorded your leave request, it will be sent
+				to a manager for validation. Be sure to set the right leave
+				type (recuperation, legal holidays, sickness) and the exact
+				number of open days related to your leave.
+			</p>
+		</field>
+	</record>
+	
+	<record model="ir.actions.act_window" id="ess_waiting_approval_leave_action">
+		<field name="name">Waiting Leave Approval</field>
+		<field name="res_model">hr.leave</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">tree,form</field>
+		<field name="context">{'default_type': 'remove'}</field>
+		<field name="domain">[('type','=','remove'),('approval_user_ids', '=', uid)]</field>
+		<field name="needaction_domain">[]</field>
+		<field name="search_view_id" ref="hr_holidays.view_hr_holidays_filter" />
+	</record>
+
+	<!-- Employee VP Action -->
+
+	<record model="ir.actions.act_window" id="ess_vp_leave_action">
+		<field name="name">Waiting VP Approval</field>
+		<field name="res_model">hr.holidays</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">tree,form</field>
+		<field name="context">{'default_type': 'remove'}</field>
+		<field name="domain">[('type','=','remove'),('state','=','vp'), ('approval_user_ids', '=', uid)]</field>
+		<field name="needaction_domain">[]</field>
+		<field name="search_view_id" ref="hr_holidays.view_hr_holidays_filter" />
+		<field name="help" type="html">
+			<p class="oe_view_nocontent_create">
+				Click to create a new leave request.
+			</p>
+			<p>
+				Once you have recorded your leave request, it will be sent
+				to a manager for validation. Be sure to set the right leave
+				type (recuperation, legal holidays, sickness) and the exact
+				number of open days related to your leave.
+			</p>
+		</field>
+	</record>
+
+	<!-- Employee CEO Action -->
+
+	<record model="ir.actions.act_window" id="ess_ceo_leave_action">
+		<field name="name">Waiting CEO Approval</field>
+		<field name="res_model">hr.leave</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">tree,form</field>
+		<field name="context">{'default_type': 'remove'}</field>
+		<field name="domain">[('type','=','remove'),('state','=','ceo'), ('approval_user_ids', '=', uid)]</field>
+		<field name="needaction_domain">[]</field>
+		<field name="search_view_id" ref="hr_holidays.view_hr_holidays_filter" />
+		<field name="help" type="html">
+			<p class="oe_view_nocontent_create">
+				Click to create a new leave request.
+			</p>
+			<p>
+				Once you have recorded your leave request, it will be sent
+				to a manager for validation. Be sure to set the right leave
+				type (recuperation, legal holidays, sickness) and the exact
+				number of open days related to your leave.
+			</p>
+		</field>
+	</record>
+
+	<!-- Employee HR Action -->
+
+	<record model="ir.actions.act_window" id="ess_hr_leave_action">
+		<field name="name">Waiting HR Approval</field>
+		<field name="res_model">hr.leave</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">tree,form</field>
+		<field name="context">{'default_type': 'remove'}</field>
+		<field name="domain">[('type','=','remove'),('state','=','validate1'), ('approval_user_ids', '=', uid)]</field>
+		<field name="needaction_domain">[]</field>
+		<field name="search_view_id" ref="hr_holidays.view_hr_holidays_filter" />
+		<field name="help" type="html">
+			<p class="oe_view_nocontent_create">
+				Click to create a new leave request.
+			</p>
+			<p>
+				Once you have recorded your leave request, it will be sent
+				to a manager for validation. Be sure to set the right leave
+				type (recuperation, legal holidays, sickness) and the exact
+				number of open days related to your leave.
+			</p>
+		</field>
+	</record>
+
+	<record model="ir.actions.act_window" id="ess_all_leave_request_action">
+		<field name="name">All Leave Requests</field>
+		<field name="res_model">hr.leave</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">tree,form,calendar</field>
+		<field name="context">{'default_type': 'remove',
+			'search_default_group_date_from':1, 'search_default_group_type':1}
+		</field>
+		<field name="domain">[('type','=','remove'),('employee_id.active','=',True)]
+		</field>
+		<field name="help" type="html">
+			<p class="oe_view_nocontent_create">
+				Click to create a new leave request.
+			</p>
+			<p>
+				Once you have recorded your leave request, it will be sent
+				to a
+				manager for validation. Be sure to set the right leave
+				type
+				(recuperation, legal
+				holidays, sickness) and the exact
+				number of
+				open days related to your leave.
+			</p>
+		</field>
+	</record>
+
+	<record id="refuse_reason_action" model="ir.actions.act_window">
+		<field name="name">Refusal Reason</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">refuseleave.reason</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+	<record id="action_hr_holidays_calculator_wizard" model="ir.actions.act_window">
+		<field name="name">Holidays Calculator</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">hr.holidays.calculator</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+	<record id="open_accrual" model="ir.actions.act_window">
+		<field name="name">Accrual Time Banks</field>
+		<field name="res_model">hr.accrual</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">tree,form</field>
+	</record>
+	
+	<record id="act_hr_holidays_approval" model="ir.actions.act_window">
+		<field name="name">Leave Approval</field>
+		<field name="res_model">hr.holidays.approval</field>
+		<!--field name="view_type">form</field-->
+		<field name="view_mode">tree,form</field>
+	</record>	
+	
+	<record id="hr_holidays.action_hr_holidays_summary_employee" model="ir.actions.act_window">
+		<field name="groups_id" eval="[(6,0, [ref('hr.group_hr_user'), ref('hr_holidays.group_hr_holidays_user')])]" />
+	</record>
+
+</odoo>

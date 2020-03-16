@@ -1,0 +1,10 @@
+- deactive hr_holidays.holiday_status_cl
+-
+  !python { model : hr.holidays.status , id : hr_holidays.holiday_status_cl } : |
+    self.active = False
+  
+- deactive hr_holidays.holiday_status_comp
+-
+  !python { model : hr.holidays.status , id : hr_holidays.holiday_status_comp } : |
+    self.active = False
+    

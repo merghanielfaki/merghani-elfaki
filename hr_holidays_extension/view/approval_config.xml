@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_hr_holidays_approval_config_form" model="ir.ui.view">
+		<field name="name">approval.config.form</field>
+		<field name="model">hr.holidays.approval</field>
+		<field name="arch" type="xml">
+			<form>
+				<sheet>
+					<group>
+						<group>
+							<field name="sequence" />
+							<field name="active" />
+							<field name="auto_subscribe_users" />
+							<field name="sla_date_count" />
+						</group>
+						<group>
+							<field name="state" />
+							<field name="name" />
+						</group>
+					</group>
+					<group string="Required Condition">
+						<field name="condition" nolabel="1" />
+					</group>
+					<notebook>
+						<page string="Approval Groups">
+							<group>
+								<field name="group_ids" nolabel="1">
+									<tree>
+										<field name="display_name" />
+										<field name="xml_id" />
+									</tree>
+								</field>
+							</group>
+						</page>
+						<page string="Filter">
+							<group string="Filter Condition">
+								<field name="filter_condition" nolabel="1" />
+							</group>
+							<group string="Filter Condition Ignore Groups">
+								<field name="filter_group_ids" nolabel="1">
+									<tree>
+										<field name="display_name" />
+										<field name="xml_id" />
+									</tree>
+								</field>
+							</group>
+							<group string="Own Document Approval Groups">
+								<field name="own_group_ids" nolabel="1">
+									<tree>
+										<field name="display_name" />
+										<field name="xml_id" />
+									</tree>
+								</field>
+							</group>
+						</page>
+						<page string="Mail Templates">
+							<group>
+								<field name="template_ids" nolabel="1">
+									<tree>
+										<field name="display_name" />
+										<field name="xml_id" />
+									</tree>
+								</field>
+							</group>
+						</page>
+					</notebook>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+</odoo>

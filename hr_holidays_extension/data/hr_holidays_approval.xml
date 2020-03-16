@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="approval_confirm" model="hr.holidays.approval">
+		<field name="sequence" eval="10" />
+		<field name="state">confirm</field>
+		<field name="name">Manager Approval</field>
+		<field name="group_ids" eval="[(6,0, [ref('group_leave_employee_manager'),ref('group_leave_manager_external')])]" />
+		<field name="condition">record.type=='remove' and not record.holiday_status_id.hr_appr</field>
+		<field name="filter_condition">record.employee_id.parent_id.user_id == user</field>
+		<field name="filter_group_ids" eval="[]" />
+		<field name="own_group_ids" eval="[(6,0, [ref('group_leave_ceo')])]" />
+		<field name="template_ids" eval="[(6,0, [ref('email_template_holidays_update_mgt')])]" />
+	</record>
+	
+	<record id="approval_vp" model="hr.holidays.approval">
+		<field name="sequence" eval="20" />
+		<field name="state">vp</field>
+		<field name="name">VP Approval</field>
+		<field name="group_ids" eval="[(6,0, [ref('group_leave_vp'),ref('group_leave_vp_external')])]" />
+		<field name="condition">record.type=='remove' and record.holiday_status_id.vp_appr</field>
+		<field name="filter_condition">record.employee_id.service_vp_id.user_id == user</field>
+		<field name="filter_group_ids" eval="[]" />
+		<field name="template_ids" eval="[(6,0, [ref('email_template_holidays_update_vp')])]" />		
+	</record>
+	
+	<record id="approval_validate1" model="hr.holidays.approval">
+		<field name="sequence" eval="30" />
+		<field name="state">validate1</field>
+		<field name="name">HR Approval</field>
+		<field name="group_ids" eval="[(6,0, [ref('group_leave_hr'),ref('group_leave_hr_external')])]" />
+		<field name="condition">record.type=='remove' and (record.holiday_status_id.double_validation or record.holiday_status_id.hr_appr)</field>
+		<field name="filter_condition"></field>
+		<field name="filter_group_ids" eval="[]" />
+		<field name="template_ids" eval="[(6,0, [ref('email_template_holidays_emp_hr')])]" />
+	</record>
+	
+	<record id="approval_ceo" model="hr.holidays.approval">
+		<field name="sequence" eval="40" />
+		<field name="state">ceo</field>
+		<field name="name">CEO Approval</field>
+		<field name="group_ids" eval="[(6,0, [ref('group_leave_ceo'),ref('group_leave_ceo_external')])]" />
+		<field name="condition">record.type=='remove' and record.holiday_status_id.ceo_number and record.holiday_status_id.ceo_number &lt;= record.real_days</field>
+		<field name="filter_condition">record.employee_id.service_ceo_id.user_id == user</field>
+		<field name="filter_group_ids" eval="[]" />
+		<field name="template_ids" eval="[(6,0, [ref('email_template_holidays_update_ceo')])]" />
+	</record>
+	
+	<record id="approval_requster_cancel" model="hr.holidays.approval">
+		<field name="sequence" eval="50" />
+		<field name="state">requster_cancel</field>
+		<field name="name">Requester Canceled</field>
+		<field name="group_ids" eval="[(6,0, [ref('group_leave_employee_manager'),ref('group_leave_manager_external')])]" />
+		<field name="condition">record.type=='remove' and record.requster_cancel</field>
+		<field name="filter_condition">record.employee_id.parent_id.user_id == user</field>
+	</record>		
+
+</odoo>

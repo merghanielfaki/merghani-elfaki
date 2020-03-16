@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!-- To view the approved leaves of employees -->
+	<record id="view_hr_holidays_filter_inherit" model="ir.ui.view">
+		<field name="name">hr.leave.filter.inherit</field>
+		<field name="model">hr.leave</field>
+		<field name="priority">1</field>
+		<field name="inherit_id" ref="hr_holidays.view_hr_holidays_filter" />
+		<field name="arch" type="xml">
+			<filter name="my_leaves" position="attributes">
+				<attribute name="string">My Approved Requests</attribute>
+				<attribute name="domain">[('employee_id.user_id','=', uid),('state','=', 'validate')]</attribute>
+			</filter>
+			<filter name="year" position="replace">
+				<filter name="year" string="Current Year"
+                        domain="['|','&amp;',('date_to', '&lt;=', time.strftime('%%Y-12-31')),
+                                             ('date_to', '&gt;=', time.strftime('%%Y-01-01')),
+                                     '&amp;',('date_from', '&lt;=', time.strftime('%%Y-12-31')),
+                                             ('date_from', '&gt;=', time.strftime('%%Y-01-01'))]"
+                        help="Current Year Leaves"/>
+			</filter>
+			<filter name="approve" position="attributes">
+				<attribute name="domain">[('approval_user_ids', '=', uid)]</attribute>
+			</filter>
+		</field>
+	</record>
+
+	<record id="view_leave_request_form" model="ir.ui.view">
+		<field name="name">Leave Request</field>
+		<field name="model">hr.leave</field>
+		<field name="priority">1</field>
+		<field name="inherit_id" ref="hr_holidays.edit_holiday_new" />
+		<field name="arch" type="xml">
+			<header position="replace">
+				<header>
+					<field name="button_approve_enabled" invisible="1" />
+					<field name="cancel_enabled" invisible="1" />
+
+					<button string="Submit for approval" name="action_confirm" class="oe_highlight" states="draft" type="object" />
+
+					<button string="Manager Approval" name="action_approve" class="oe_highlight" type="object"
+						attrs="{'invisible': ['|', ('button_approve_enabled', '=', False), ('state', '!=', 'confirm')]}" />
+
+					<button string="VP Approval" name="action_approve" class="oe_highlight" type="object"
+						attrs="{'invisible': ['|', ('button_approve_enabled', '=', False), ('state', '!=', 'vp')]}" />
+
+					<button string="HR Approval" name="action_approve" class="oe_highlight" type="object"
+						attrs="{'invisible': ['|', ('button_approve_enabled', '=', False), ('state', '!=', 'validate1')]}" />
+
+					<button string="CEO Approval" name="action_approve" class="oe_highlight" type="object"
+						attrs="{'invisible': ['|', ('button_approve_enabled', '=', False), ('state', '!=', 'ceo')]}" />
+
+					<button string="Reset to Draft" name="action_draft" type="object" attrs="{'invisible': [('can_reset', '=', False)]}" />
+					
+					<button name="action_requester_cancel" type="object" attrs="{'invisible': [('cancel_enabled', '=', False)]}" string="Cancel"/>
+					
+					<button string="Approve Cancellation" name="action_approve" class="oe_highlight" type="object"
+						attrs="{'invisible': ['|', ('button_approve_enabled', '=', False), ('state', '!=', 'requster_cancel')]}" />
+					
+					<button name="action_manager_refuse_cancellation" type="object" attrs="{'invisible': ['|', ('button_approve_enabled', '=', False), ('state', '!=', 'requster_cancel')]}" string="Refuse Cancellation"/>
+					
+					<button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'in', ['draft','cancel'])]}" groups="hr_holidays_extension.group_leave_hr"/>
+					
+					<button name="%(refuse_reason_action)d" type="action" string="Refuse"
+						attrs="{'invisible': ['|', ('button_approve_enabled', '=', False), ('state', 'in', ['draft','requster_cancel'])]}" />
+
+					<field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate" statusbar_colors='{"confirm":"blue","validate1":"blue","refuse":"red"}' />
+				</header>
+			</header>
+			<sheet position="replace">
+				<sheet string="Leave Request">
+					<div class="oe_right oe_button_box" name="buttons">
+						<button class="oe_inline oe_stat_button" type="object" groups="delegation.delegation_employee" name="action_view_delegation" icon="fa-tasks"
+							attrs="{'invisible': [('delegation_ignored','=', True)]}">
+							<field name="delegation_name" widget="statinfo" string="Delegation" />
+						</button>
+					</div>
+					<group>
+						<group>
+							<field name="id" invisible="1" />
+							<field name="type" invisible="1" />
+							<field name="employee_id"
+								attrs="{'required':[('holiday_type','=','employee')],'readonly':[('state','!=','draft')],'invisible':[('holiday_type','=','category')]}"
+								groups="hr_holidays.group_hr_holidays_user,hr.group_hr_user" class="oe_edit_only" />							
+
+							<field name="emp_id_view" groups="hr_holidays.group_hr_holidays_user,hr.group_hr_user" class="oe_read_only" />
+							<field name="holiday_status_id" widget="selection" context="{'employee_id':employee_id}" attrs="{'readonly':[('state','!=','draft')]}" />							
+							<field name="partial_leave_enabled" invisible="1" />
+							<field name="partial_leave" attrs="{'invisible': ['|',('partial_leave_enabled', '=', False),('type', '=', 'add')],'readonly':[('state','!=','draft')]}"/>
+							<field name="leave_balance_char" attrs="{'invisible': ['|', ('leave_balance_char', '=', False),('partial_leave', '=', False)]}"/>
+							<label for="date_from" string="Duration" attrs="{'invisible': [('type', '=', 'add')]}"
+								help="The default duration interval between the start date and the end date is 8 hours.  Feel free to adapt it to your needs." />
+							<div attrs="{'invisible': [('type', '=', 'add')]}">
+								<group attrs="{'invisible': [('partial_leave', '!=', False)]}">
+									<field colspan="2" name="date_from" nolabel="1" attrs="{'required': [('type', '=', 'remove'),('partial_leave', '=', False)],'readonly': [('state','!=','draft')]}"
+										t-field-options='{"format": "d MMMM y"}' class="oe_inline" widget="date" />
+
+									<field name="date_to" nolabel="1"
+										attrs="{'required': [('type', '=', 'remove'),('partial_leave', '=', False)], 'invisible': [('half_day','=',True)],
+												'readonly':[('state','!=','draft')]}"
+										class="oe_inline" widget="date" />
+								</group>
+								<group attrs="{'invisible': [('partial_leave', '=', False)]}">
+									<field colspan="2" name="date_time_from" nolabel="1" attrs="{'required': [('type', '=', 'remove'),('partial_leave', '!=', False)],'readonly': [('state','!=','draft')]}"
+										t-field-options='{"format": "d MMMM y"}' class="oe_inline"/>
+
+									<field name="date_time_to" nolabel="1"
+										attrs="{'required': [('type', '=', 'remove'),('partial_leave', '!=', False)], 'invisible': [('half_day','=',True)],
+												'readonly':[('state','!=','draft')]}" class="oe_inline"/>
+								</group>
+							</div>
+							<label for="half_day" invisible="1" string="Half Day" attrs="{'invisible': [('type', '=', 'add')]}" help="Tick this if you need to take half day leave only." />
+							<div attrs="{'invisible': [('type', '=', 'add')]}">
+								<group col="3">
+									<field name="half_day" invisible="1" nolabel="1" />
+								</group>
+							</div>
+						</group>
+						<group>
+							<field name="holiday_type" attrs="{'invisible': [('type', '=', 'remove')]}" />
+							<field name="name" attrs="{'readonly':[('state','!=','draft')]}" />
+							<field name="department_id" readonly="1" />
+							<field name="empl_contract_id" readonly="1" />
+							<field name="nationality_id" readonly="1" />
+							<field name="ex_leave" groups="hr_holidays.group_hr_holidays_user,hr.group_hr_user" attrs="{'invisible': [('type', '=', 'add')],'readonly':[('state','!=','draft')]}" />
+							<field name="flag_saudi" invisible="1" />
+						</group>
+					</group>
+					<group>
+						<group>
+							<field name="number_of_days_temp" invisible="0" attrs="{'invisible': [('type', '=', 'remove')],'readonly':[('state','!=','draft')]}"
+								required="1" readonly="0" groups="hr_extension.group_hr_director,hr.group_hr_user,hr_holidays.group_hr_holidays_user" />
+						</group>
+						<group colspan="4" col="4" attrs="{'invisible': [('type', '=', 'add')]}">
+							<field name="real_days" colspan="2" attrs="{'invisible': [('partial_leave', '!=', False)]}"/>
+							<field name="real_hours" colspan="2" widget="float_time" attrs="{'invisible': [('partial_leave', '=', False)]}"/>
+							<field name="max_leaves" string="Actual Balance" colspan="2" />
+							<field name="return_date" colspan="2" />
+							<field name="alternative_emp_id"
+								attrs="{'required':[('flag_emp_mandatory','=',True),('type', '!=', 'add')],'invisible':[('department_id',
+                                    '=',True)],'readonly':[('state','!=','confirm'),('state','!=','draft')]}"
+								domain="[('id','=',1)]" />
+
+							<field name="real_days_value" invisible="1" />
+							<field name="real_hours_value" invisible="1" />
+							<field name="max_leaves_value" invisible="1" />
+							<field name="return_date_value" invisible="1" />
+							<field name="total_hours_char" invisible="1" />
+							<field name="flag_attachment" attrs="{'invisible':True}" />
+							<field name="flag_emp_mandatory" attrs="{'invisible':True}" />
+						</group>
+					</group>
+					<group>
+						<separator string='' />
+						<separator string='' />
+						<separator string='' />
+						<separator string='' />
+					</group>
+					<group string="Delegation" attrs="{'invisible': [('type','=', 'add')]}" groups="delegation.delegation_employee">
+						<field name="delegation_ignored" />
+					</group>
+					<notebook attrs="{'invisible': [('type', '=', 'add')]}">
+						<page string="Leave Balance Information">
+							<group>
+								<group>
+									<group colspan="4" col="4">
+										<field name="working_days" colspan="2" />
+										<newline />
+										<field name="rest_days" colspan="2" />
+										<field name="public_holiday_days" colspan="2" />
+										<field name="rest_days_value" invisible="1" />
+										<field name="public_holiday_days_value" invisible="1" />
+										<field name="working_days_value" invisible="1" />
+									</group>
+
+									<group colspan="4" col="4">
+										<field name="future_balance_value" invisible="1" />
+										<field name="future_balance" />
+										<field name="total_days" colspan="2" />
+										<!-- invisible fields to store values only -->
+										<field name="total_days_value" invisible="1" />
+										<field name="holiday_type" invisible="1" />
+									</group>
+
+								</group>
+								<group colspan="4" col="4">
+									<field name="max_allowed_days_value" invisible="1" />
+									<field name="max_allowed_days" />
+									<field name="leaves_taken" colspan="2" />
+									<field name="remaining_leaves" colspan="2" />
+									<field name="curr_remaining_leaves" colspan="2" />
+									<field name="new_leave_balance_char" attrs="{'invisible': ['|','|','|', ('new_leave_balance_char', '=', False),('partial_leave', '=', False),('date_time_from', '=', False),('date_time_to', '=', False)]}"/>
+									<field name="curr_remaining_leaves_value" invisible="1" />
+									<field name="leaves_taken_value" invisible="1" />
+									<field name="remaining_leaves_value" invisible="1" />
+								</group>
+							</group>
+						</page>
+						<page string="Travel Information" attrs="{'invisible': [('flag_saudi','=',True)]}">
+							<group>
+								<group colspan="4" col="4">
+									<field name="outside_ksa" attrs="{'readonly':[('state','!=','draft')],'invisible': [('flag_saudi','=',True)]}" colspan="2" />
+									<field name="exit_reentry_visa" attrs="{'readonly':[('state','!=','draft')],'invisible': [('flag_saudi','=',True)]}" colspan="2" />
+
+									<field name="tickets_required" attrs="{'readonly':[('state','!=','draft')],'readonly':[('state','!=','draft')],'invisible': [('flag_saudi','=',True)]}"
+										colspan="2" />
+									<field name="tickets" attrs="{'invisible': [('tickets_required','=',False)], 'required': [('tickets_required','=',True)]}" colspan="2" />
+									<field name="transportation_to_airport" attrs="{'readonly':[('state','!=','draft')],'invisible': [('flag_saudi','=',True)]}" colspan="2" />
+									<field name="return_belonging" groups="hr.group_hr_user" colspan="2" />
+									<field name="vacation_salary_advance" colspan="2" attrs="{'invisible': [('tickets_required','=',False)]}" />
+
+									<field name="actual_return_date" groups="hr.group_hr_user,hr_holidays.group_hr_holidays_user" colspan="2" />
+								</group>
+								<!-- <group colspan="4" col="4"> </group> -->
+								<group colspan="4" col="4">
+									<field name="include_exclude_lines" invisible="1">
+										<tree editable="bottom">
+											<field name="tdate" />
+											<field name="date_type" />
+											<field name="status" />
+											<field name="employee_id" />
+										</tree>
+									</field>
+								</group>
+							</group>
+						</page>
+						<page string="Refusal Reason" attrs="{'invisible': [('state','!=','refuse')]}">
+							<field name="refuse_reason" string="Refusal Reason" readonly='1' attrs="{'invisible': [('state','!=','refuse')]}" />
+						</page>
+						<page string="Status Log" attrs="{'invisible' : [('approval_logs', '=', [(6, False, [])])]}">
+							<group>
+								<field name="waiting_approval" invisible="1" />
+								<field name="approval_user2_ids" attrs="{'invisible' : [('waiting_approval','=', False)]}" widget="many2many_tags" />
+							</group>
+							<group>
+								<field name="approval_logs" nolabel="1">
+									<tree>
+										<field name="old_name" />
+										<field name="name" />
+										<field name="user_id" />
+										<field name="date" />
+									</tree>
+								</field>
+							</group>
+						</page>
+					</notebook>
+					<field name="notes" nolabel="1" colspan="4" placeholder="Add a reason..." attrs="{'invisible': [('type', '=', 'remove')],'readonly':[('state','!=','draft')]}" />
+				</sheet>
+			</sheet>
+		</field>
+	</record>
+      
+      <record id="view_holiday_allocation_tree_state_icon" model="ir.ui.view">
+            <field name="name">hr.holidays.allocation.tree</field>
+            <field name="model">hr.leave</field>
+			<field name="inherit_id" ref="hr_holidays.view_holiday_allocation_tree" />
+            <field name="arch" type="xml">
+            <field name="employee_id" position="after">
+            	<field name="state_icon" widget="image" />	
+            </field>
+            </field>
+      </record>
+
+	<record id="view_employee_form_leave_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.leave.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr_holidays.view_employee_form_leave_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='remaining_leaves']" position="attributes">
+                <attribute  name="readonly">1</attribute >
+            </xpath>
+        </field>
+    </record>
+</odoo>

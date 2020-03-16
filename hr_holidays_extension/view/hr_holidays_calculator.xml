@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_form_hr_holidays_calculator_wizard" model="ir.ui.view">
+		<field name="name">view.wizard.form.hr.holidays.calculator</field>
+		<field name="model">hr.holidays.calculator</field>
+		<field name="arch" type="xml">
+			<form string="Holidays Calculator" version="7.0">
+				<sheet>
+					<group col="4">
+						<field name="employee_id" colspan="2" />
+						<field name="allocate_balance" colspan="2" />
+						<field name="warning_message" attrs="{'invisible':[('warning_message','=',False)]}" nolabel="1" class="bg-warning" colspan="4" />
+					</group>
+					<group col="4">
+						<field name="holiday_status_id" colspan="2"
+							attrs="{'required':[('allocate_balance','=',True)]}" />
+					</group>
+					<group col="4" string="Leaves Statistics" attrs="{'invisible':[('allocate_balance','=',True)]}">
+						<field name="allocated_leave_balance" colspan="2" />
+						<field name="taken_leave_balance" colspan="2" />
+					</group>
+					<group col="4" string="Holidays Calculator" attrs="{'invisible':[('allocate_balance','=',False)]}">
+						<field name="leave_max_days" 
+							colspan="2" />
+						<newline />
+						<field name="date_from" colspan="2" />
+						<field name="hijri_date_from" placeholder="e.g: 1417-10-20" colspan="2" />
+						<field name="date_to" colspan="2" />
+						<field name="hijri_date_to" placeholder="e.g: 1417-10-20" colspan="2" />
+					</group>
+					<group col="4" string="Result" attrs="{'invisible':[('allocate_balance','=',False)]}">
+						<field name="deserved_balance" colspan="2" />
+						<newline />
+						<button name="allocate_initial_leave_balance" attrs="{'invisible':[('allocate_balance','=',False)]}" string="Allocate Leave Balance"
+							type="object" class="oe_highlight" groups="hr_holidays_extension.holidays_calculator" confirm="Are you sure you want to allocate this balance to the selected employee?" />
+					</group>
+					<group string="Employee's Leaves" attrs="{'invisible':[('allocate_balance','=',True)]}">
+						<group string="Taken Leaves" col="2">
+							<field name="previous_leaves_ids" nolabel="1" widget="one2many">
+								<tree>
+									<field name="holiday_status_id" />
+									<field name="date_from" />
+									<field name="date_to" />
+									<field name="number_of_days_temp" />
+									<field name="state" />
+								</tree>
+							</field>
+						</group>
+						<group string="Allocated Leaves" col="2">
+							<field name="allocated_leaves_ids" nolabel="1" widget="one2many">
+								<tree>
+									<field name="holiday_status_id" />
+									<field name="number_of_days_temp" />
+									<field name="state" />
+								</tree>
+							</field>
+						</group>
+					</group>
+				</sheet>
+				<footer>
+					<button special="cancel" string="Close" class="oe_link" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+</odoo>

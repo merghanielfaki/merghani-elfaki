@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_holiday_status_form" model="ir.ui.view">
+		<field name="name">hr.holidays.status.form.extension</field>
+		<field name="model">hr.holidays.status</field>
+		<field name="inherit_id" ref="hr_holidays.edit_holiday_status_form" />
+		<field name="arch" type="xml">
+			<field name="name" position="after">
+				<field name="code" />
+			</field>
+			<group position="after">
+				<group>
+					<group string="Calculation">
+						<field name="partial_leave" />
+						<field name="ex_rest_days" />
+						<field name="ex_public_holidays" />
+						<field name="min_days" />
+						<field name="max_days" />
+						<field name="allow_future_balance" invisible="1" />
+					</group>
+					<group string="Rules">
+						<field name="attachment_mandatory" />
+						<field name="alternative_emp_mandatory" />
+					</group>
+					<group string="Exceptions">
+						<field name="allow_trial_period" />
+						<field name="ignore_locked_period" />
+					</group>
+					<group string="Restraction">
+						<field name="is_gender" />
+						<field name="gender" attrs="{'invisible':[('is_gender','=',False)],'required':[('is_gender','=',True)]}" />
+						<field name="is_religion" />
+						<field name="religion" attrs="{'invisible':[('is_religion','=',False)],'required':[('is_religion','=',True)]}" />
+					</group>
+				</group>
+			</group>
+			<field name="double_validation" position="before">
+				<field name="ceo_number" />
+				<field name="hr_appr" />
+				<field name="vp_appr" />
+			</field>
+		</field>
+	</record>
+
+</odoo>
